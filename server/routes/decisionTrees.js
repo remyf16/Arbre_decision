@@ -27,8 +27,13 @@ router.get('/:id', auth, async (req, res) => {
 
 // Create a new decision tree
 router.post('/', auth, async (req, res) => {
-  const { title, nodes } = req.body;
-  const tree = new DecisionTree({ title, nodes });
+  const tree = new DecisionTree({
+    name: 'Nouvel Arbre de Décision',
+    description: 'Cliquez pour modifier la description.',
+    nodes: [],
+    edges: [],
+    status: 'Brouillon',
+  });
   try {
     const newTree = await tree.save();
     res.status(201).json(newTree);
@@ -38,13 +43,15 @@ router.post('/', auth, async (req, res) => {
 });
 
 // Update a decision tree
-router.patch('/:id', auth, async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
   try {
+    const { nodes, edges } = req.body;
     const tree = await DecisionTree.findById(req.params.id);
     if (!tree) return res.status(404).json({ message: 'Decision tree not found' });
 
-    if (req.body.title) tree.title = req.body.title;
-    if (req.body.nodes) tree.nodes = req.body.nodes;
+    tree.nodes = nodes;
+    tree.edges = edges;
+    tree.updatedAt = Date.now();
 
     const updatedTree = await tree.save();
     res.json(updatedTree);

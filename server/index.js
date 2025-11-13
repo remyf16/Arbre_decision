@@ -35,6 +35,9 @@ app.use('/api/auth', authRouter);
 const usersRouter = require('./routes/users');
 app.use('/api/users', usersRouter);
 
+const resultsRouter = require('./routes/results');
+app.use('/api/results', resultsRouter);
+
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
