@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import AdminLayout from './components/dashboard/AdminLayout';
 import Dashboard from './components/dashboard/Dashboard';
 import Login from './components/auth/Login';
@@ -7,11 +7,18 @@ import Register from './components/auth/Register';
 import DecisionTreeEditor from './components/DecisionTreeEditor';
 import DecisionTreeViewer from './components/DecisionTreeViewer';
 import UserManagement from './components/dashboard/UserManagement';
+import Settings from './components/dashboard/Settings';
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = !!localStorage.getItem('token'); // Replace with your auth logic
   return isAuthenticated ? children : <Navigate to="/login" />;
 };
+
+const DashboardLayout = () => (
+  <AdminLayout>
+    <Outlet />
+  </AdminLayout>
+);
 
 function App() {
   return (
@@ -20,26 +27,17 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/tree/:id" element={<DecisionTreeViewer />} />
+
         <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <AdminLayout>
-                <Dashboard />
-              </AdminLayout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/users"
-          element={
-            <PrivateRoute>
-              <AdminLayout>
-                <UserManagement />
-              </AdminLayout>
-            </PrivateRoute>
-          }
-        />
+          path="/"
+          element={<PrivateRoute><DashboardLayout /></PrivateRoute>}
+        >
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="users" element={<UserManagement />} />
+          <Route path="settings" element={<Settings />} />
+          <Route index element={<Navigate to="/dashboard" />} />
+        </Route>
+
         <Route
           path="/editor/:id"
           element={
@@ -48,7 +46,6 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route path="/" element={<Navigate to="/dashboard" />} />
       </Routes>
     </Router>
   );
