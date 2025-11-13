@@ -44,9 +44,10 @@ router.post('/register', async (req, res) => {
 
 // Login a user
 router.post('/login', async (req, res) => {
-  // const { email, password } = req.body;
+  const { email, password } = req.body;
   try {
-    return res.json({ message: "Route reached successfully" });
+    console.log('Login attempt for:', email);
+    return res.json({ message: `Received email: ${email}` });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
