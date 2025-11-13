@@ -5,18 +5,22 @@ import Header from './editor/Header';
 import ToolsSidebar from './editor/ToolsSidebar';
 import EditorCanvas from './editor/EditorCanvas';
 import NodeEditorSidebar from './editor/NodeEditorSidebar';
+import useDebounce from '../hooks/useDebounce';
 
 const DecisionTreeEditor = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNode, setSelectedNode] = useState(null);
 
+  const debouncedNodes = useDebounce(nodes, 500);
+  const debouncedEdges = useDebounce(edges, 500);
+
   useEffect(() => {
     const initialTreeData = {
       nodes: [
-        { id: '1', type: 'question', position: { x: 250, y: 50 }, data: { id: '1', label: 'What is the user\'s main goal?', answers: [{ text: 'Find a product' }, { text: 'Get support' }] } },
-        { id: '2', type: 'result', position: { x: 50, y: 300 }, data: { id: '2', label: 'Product Page' } },
-        { id: '3', type: 'result', position: { x: 450, y: 300 }, data: { id: '3', label: 'Support Center' } },
+        { id: '1', type: 'question', position: { x: 250, y: 50 }, data: { id: '1', label: 'Nouvelle demande de production', answers: [{ text: 'Find a product' }, { text: 'Get support' }] } },
+        { id: '2', type: 'result', position: { x: 50, y: 300 }, data: { id: '2', label: 'Prestation' } },
+        { id: '3', type: 'result', position: { x: 450, y: 300 }, data: { id: '3', label: 'Partenariat' } },
       ],
       edges: [
         { id: 'e1-2', source: '1', sourceHandle: 'answer-0', target: '2' },
@@ -29,19 +33,23 @@ const DecisionTreeEditor = () => {
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
-  const onSave = () => {
+  const onSave = useCallback(() => {
+    if (nodes.length === 0) return;
     const treeData = {
       nodes: nodes,
       edges: edges,
     };
-    console.log('Saving tree data:', JSON.stringify(treeData, null, 2));
-    alert('Tree data saved to console!');
-  };
+    console.log('Auto-saving tree data:', JSON.stringify(treeData, null, 2));
+  }, [nodes, edges]);
+
+  useEffect(() => {
+    onSave();
+  }, [debouncedNodes, debouncedEdges, onSave]);
 
   return (
     <div className="flex flex-col h-screen w-full font-display text-text-light dark:text-text-dark bg-background-light dark:bg-background-dark">
       <ReactFlowProvider>
-        <Header onSave={onSave} />
+        <Header />
         <div className="flex flex-1 overflow-hidden">
           <ToolsSidebar />
           <main className="flex-1 relative bg-background-light dark:bg-background-dark overflow-hidden">

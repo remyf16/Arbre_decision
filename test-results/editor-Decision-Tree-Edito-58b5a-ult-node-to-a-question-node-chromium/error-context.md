@@ -1,0 +1,77 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - generic [ref=e9]: account_tree
+          - generic [ref=e10]:
+            - heading "DecisionTree" [level=1] [ref=e11]
+            - paragraph [ref=e12]: Admin Panel
+        - navigation [ref=e13]:
+          - link "Tableau de bord" [ref=e14] [cursor=pointer]:
+            - /url: "#/dashboard"
+            - paragraph [ref=e15]: Tableau de bord
+          - link "Editeur" [ref=e16] [cursor=pointer]:
+            - /url: "#/editor"
+            - paragraph [ref=e17]: Editeur
+          - link "Utilisateurs" [ref=e18] [cursor=pointer]:
+            - /url: "#/users"
+            - paragraph [ref=e19]: Utilisateurs
+          - link "Paramètres" [ref=e20] [cursor=pointer]:
+            - /url: "#/settings"
+            - paragraph [ref=e21]: Paramètres
+      - button "Collapse" [ref=e22] [cursor=pointer]
+  - generic [ref=e23]:
+    - banner [ref=e24]:
+      - heading "Tableau de bord" [level=2] [ref=e26]
+      - generic [ref=e27]:
+        - generic [ref=e29]:
+          - generic [ref=e31]: search
+          - textbox "search" [ref=e32]:
+            - /placeholder: Rechercher un arbre...
+        - button "notifications" [ref=e33] [cursor=pointer]:
+          - generic [ref=e34]: notifications
+    - main [ref=e36]:
+      - main [ref=e38]:
+        - generic [ref=e39]:
+          - paragraph [ref=e40]: Mes Arbres de Décision
+          - button "add_circle Créer un arbre" [ref=e41] [cursor=pointer]:
+            - generic [ref=e42]: add_circle
+            - generic [ref=e43]: Créer un arbre
+        - table [ref=e47]:
+          - rowgroup [ref=e48]:
+            - row "Nom de l'arbre Dernière modification Statut Vues Actions" [ref=e49]:
+              - cell "Nom de l'arbre" [ref=e50]
+              - cell "Dernière modification" [ref=e51]
+              - cell "Statut" [ref=e52]
+              - cell "Vues" [ref=e53]
+              - cell "Actions" [ref=e54]
+          - rowgroup [ref=e55]:
+            - row "Parcours Client B2B 15 Mars 2024 Publié 1204 more_horiz" [ref=e56]:
+              - cell "Parcours Client B2B" [ref=e57]
+              - cell "15 Mars 2024" [ref=e58]
+              - cell "Publié" [ref=e59]:
+                - generic [ref=e62]: Publié
+              - cell "1204" [ref=e63]
+              - cell "more_horiz" [ref=e64]:
+                - button "more_horiz" [ref=e65] [cursor=pointer]
+            - row "Guide de Dépannage Produit 12 Mars 2024 Publié 876 more_horiz" [ref=e66]:
+              - cell "Guide de Dépannage Produit" [ref=e67]
+              - cell "12 Mars 2024" [ref=e68]
+              - cell "Publié" [ref=e69]:
+                - generic [ref=e72]: Publié
+              - cell "876" [ref=e73]
+              - cell "more_horiz" [ref=e74]:
+                - button "more_horiz" [ref=e75] [cursor=pointer]
+            - row "Arbre de Qualification de Leads 10 Mars 2024 Brouillon 0 more_horiz" [ref=e76]:
+              - cell "Arbre de Qualification de Leads" [ref=e77]
+              - cell "10 Mars 2024" [ref=e78]
+              - cell "Brouillon" [ref=e79]:
+                - generic [ref=e82]: Brouillon
+              - cell "0" [ref=e83]
+              - cell "more_horiz" [ref=e84]:
+                - button "more_horiz" [ref=e85] [cursor=pointer]
+```
