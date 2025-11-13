@@ -80,6 +80,10 @@ const UserManagement = () => {
                                                 <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">{user.dateAdded}</td>
                                                 <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                                                     <div className="flex items-center justify-end gap-2">
+                                                        {/* User results would be displayed in a modal or a dedicated user details page */}
+                                                        <button className="p-1.5 rounded-md text-gray-500 hover:text-primary hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800">
+                                                            <span className="material-symbols-outlined text-lg">visibility</span>
+                                                        </button>
                                                         <button className="p-1.5 rounded-md text-gray-500 hover:text-primary hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800">
                                                             <span className="material-symbols-outlined text-lg">edit</span>
                                                         </button>

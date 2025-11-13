@@ -1,37 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Dashboard = () => {
-  const trees = [
-    {
-      _id: '1',
-      name: 'Parcours Client B2B',
-      updatedAt: '15 Mars 2024',
-      status: 'Publié',
-      views: 1204,
-    },
-    {
-      _id: '2',
-      name: 'Guide de Dépannage Produit',
-      updatedAt: '12 Mars 2024',
-      status: 'Publié',
-      views: 876,
-    },
-    {
-      _id: '3',
-      name: 'Arbre de Qualification de Leads',
-      updatedAt: '10 Mars 2024',
-      status: 'Brouillon',
-      views: 0,
-    },
-  ];
+  const [trees, setTrees] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchTrees = async () => {
+      try {
+        const res = await axios.get('/api/decision-trees');
+        setTrees(res.data);
+      } catch (err) {
+        console.error('Failed to fetch decision trees:', err);
+      }
+    };
+    fetchTrees();
+  }, []);
 
   return (
     <div className="flex flex-col flex-1">
       <main className="flex-1 p-10 overflow-auto">
         <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
           <p className="text-text-light dark:text-text-dark text-3xl font-bold leading-tight">Mes Arbres de Décision</p>
-          <button className="flex min-w-[84px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-accent text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-opacity-90">
-            <span className="material-symbols-outlined text-base">add_circle</span>
+          <button
+            onClick={async () => {
+              try {
+                const res = await axios.post('/api/decision-trees');
+                navigate(`/editor/${res.data._id}`);
+              } catch (err) {
+                console.error('Failed to create new tree:', err);
+              }
+            }}
+            className="flex min-w-[84px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold"
+          >
             <span className="truncate">Créer un arbre</span>
           </button>
         </div>
@@ -50,22 +52,24 @@ const Dashboard = () => {
                 </thead>
                 <tbody>
                   {trees.map((tree) => (
-                    <tr key={tree._id} className="border-b border-border-light dark:border-border-dark">
+                    <tr
+                      key={tree._id}
+                      className="border-b border-border-light dark:border-border-dark hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer"
+                      onClick={() => navigate(`/results/${tree._id}`)}
+                    >
                       <td className="px-4 py-4 text-text-light dark:text-text-dark text-sm font-medium">{tree.name}</td>
-                      <td className="px-4 py-4 text-text-muted-light dark:text-text-muted-dark text-sm">{tree.updatedAt}</td>
+                      <td className="px-4 py-4 text-text-muted-light dark:text-text-muted-dark text-sm">{new Date(tree.updatedAt).toLocaleDateString()}</td>
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-2">
-                          <span className={`h-2 w-2 rounded-full ${tree.status === 'Publié' ? 'bg-status-published' : 'bg-status-draft'}`}></span>
-                          <span className={`text-sm font-medium ${tree.status === 'Publié' ? 'text-status-published' : 'text-status-draft'}`}>
+                          <span className={`h-2 w-2 rounded-full ${tree.status === 'Published' ? 'bg-green-500' : 'bg-yellow-500'}`}></span>
+                          <span className={`text-sm font-medium ${tree.status === 'Published' ? 'text-green-500' : 'text-yellow-500'}`}>
                             {tree.status}
                           </span>
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-text-muted-light dark:text-text-muted-dark text-sm text-right">{tree.views}</td>
+                      <td className="px-4 py-4 text-text-muted-light dark:text-text-muted-dark text-sm text-right">{tree.views || 0}</td>
                       <td className="px-4 py-4 text-right">
-                        <button className="p-2 text-text-muted-light dark:text-text-muted-dark rounded-md hover:bg-black/5 dark:hover:bg-white/5">
-                          <span className="material-symbols-outlined text-xl">more_horiz</span>
-                        </button>
+                        {/* Actions button placeholder */}
                       </td>
                     </tr>
                   ))}

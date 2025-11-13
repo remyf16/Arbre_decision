@@ -1,6 +1,8 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import { ReactFlowProvider, useNodesState, useEdgesState, addEdge } from 'reactflow';
+import axios from 'axios';
 import Header from './editor/Header';
 import ToolsSidebar from './editor/ToolsSidebar';
 import EditorCanvas from './editor/EditorCanvas';
@@ -8,42 +10,48 @@ import NodeEditorSidebar from './editor/NodeEditorSidebar';
 import useDebounce from '../hooks/useDebounce';
 
 const DecisionTreeEditor = () => {
+  const { id } = useParams();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNode, setSelectedNode] = useState(null);
 
-  const debouncedNodes = useDebounce(nodes, 500);
-  const debouncedEdges = useDebounce(edges, 500);
+  const debouncedNodes = useDebounce(nodes, 1000);
+  const debouncedEdges = useDebounce(edges, 1000);
 
   useEffect(() => {
-    const initialTreeData = {
-      nodes: [
-        { id: '1', type: 'question', position: { x: 250, y: 50 }, data: { id: '1', label: 'Nouvelle demande de production', answers: [{ text: 'Find a product' }, { text: 'Get support' }] } },
-        { id: '2', type: 'result', position: { x: 50, y: 300 }, data: { id: '2', label: 'Prestation' } },
-        { id: '3', type: 'result', position: { x: 450, y: 300 }, data: { id: '3', label: 'Partenariat' } },
-      ],
-      edges: [
-        { id: 'e1-2', source: '1', sourceHandle: 'answer-0', target: '2' },
-        { id: 'e1-3', source: '1', sourceHandle: 'answer-1', target: '3' },
-      ]
+    const fetchTree = async () => {
+      try {
+        const res = await axios.get(`/api/decision-trees/${id}`);
+        setNodes(res.data.nodes || []);
+        setEdges(res.data.edges || []);
+      } catch (err) {
+        console.error("Failed to fetch tree data:", err);
+      }
     };
-    setNodes(initialTreeData.nodes);
-    setEdges(initialTreeData.edges);
-  }, []);
+    if (id) {
+      fetchTree();
+    }
+  }, [id, setNodes, setEdges]);
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
-  const onSave = useCallback(() => {
-    if (nodes.length === 0) return;
-    const treeData = {
-      nodes: nodes,
-      edges: edges,
-    };
-    console.log('Auto-saving tree data:', JSON.stringify(treeData, null, 2));
-  }, [nodes, edges]);
+  const onSave = useCallback(async () => {
+    if (nodes.length === 0 || !id) return;
+    try {
+      await axios.put(`/api/decision-trees/${id}`, {
+        nodes: nodes,
+        edges: edges,
+      });
+      console.log('Tree saved successfully!');
+    } catch (err) {
+      console.error('Failed to save tree:', err);
+    }
+  }, [id, nodes, edges]);
 
   useEffect(() => {
-    onSave();
+    if (debouncedNodes.length > 0) { // Avoid saving on initial load
+      onSave();
+    }
   }, [debouncedNodes, debouncedEdges, onSave]);
 
   return (
