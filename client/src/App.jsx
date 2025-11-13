@@ -8,6 +8,7 @@ import DecisionTreeEditor from './components/DecisionTreeEditor';
 import DecisionTreeViewer from './components/DecisionTreeViewer';
 import UserManagement from './components/dashboard/UserManagement';
 import Settings from './components/dashboard/Settings';
+import EditorPage from './components/dashboard/EditorPage';
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = !!localStorage.getItem('token'); // Replace with your auth logic
@@ -32,7 +33,8 @@ function App() {
           path="/"
           element={<PrivateRoute><DashboardLayout /></PrivateRoute>}
         >
-          <Route path="dashboard" element={<DecisionTreeEditor />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="editor" element={<EditorPage />} />
           <Route path="users" element={<UserManagement />} />
           <Route path="settings" element={<Settings />} />
           <Route index element={<Navigate to="/dashboard" />} />

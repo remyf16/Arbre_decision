@@ -6,6 +6,7 @@ const QuestionNode = ({ data }) => {
   return (
     <div className="w-96 flex flex-col gap-2 rounded-lg bg-surface-light dark:bg-surface-dark p-4 shadow-lg border-2 border-primary">
       <Handle type="target" position={Position.Top} className="!bg-primary" />
+      <Handle type="source" position={Position.Bottom} className="!bg-primary" />
       <div className="flex justify-between items-start gap-4">
         <div className="flex flex-col gap-1">
           <p className="text-xs text-text-muted-light dark:text-text-muted-dark">Node ID: {data.id}</p>

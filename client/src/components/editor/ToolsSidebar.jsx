@@ -20,7 +20,6 @@ const ToolsSidebar = () => {
             onDragStart={(event) => onDragStart(event, 'question')}
             draggable
           >
-            <span className="material-symbols-outlined text-primary">help</span>
             <p className="text-primary text-sm font-medium">Add Question</p>
           </div>
           <div
@@ -28,7 +27,6 @@ const ToolsSidebar = () => {
             onDragStart={(event) => onDragStart(event, 'result')}
             draggable
           >
-            <span className="material-symbols-outlined text-text-muted-light dark:text-text-muted-dark">flag</span>
             <p className="text-text-light dark:text-text-dark text-sm font-medium">Add Result</p>
           </div>
         </div>
@@ -36,15 +34,12 @@ const ToolsSidebar = () => {
       <div className="flex flex-col gap-2 pt-4 border-t border-border-light dark:border-border-dark">
         {/* Zoom buttons functionality will be added later */}
         <div className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">
-          <span className="material-symbols-outlined text-text-muted-light dark:text-text-muted-dark">zoom_in</span>
           <p className="text-text-light dark:text-text-dark text-sm font-medium">Zoom In</p>
         </div>
         <div className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">
-          <span className="material-symbols-outlined text-text-muted-light dark:text-text-muted-dark">zoom_out</span>
           <p className="text-text-light dark:text-text-dark text-sm font-medium">Zoom Out</p>
         </div>
         <div className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer">
-          <span className="material-symbols-outlined text-text-muted-light dark:text-text-muted-dark">center_focus_strong</span>
           <p className="text-text-light dark:text-text-dark text-sm font-medium">Recenter View</p>
         </div>
       </div>
