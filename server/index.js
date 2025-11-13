@@ -5,10 +5,9 @@ const cors = require('cors');
 const app = express();
 const port = 3000;
 
-const allowedOrigin = 'https://arbre-decision-front.onrender.com/';
-
 app.use(cors({
-    origin: allowedOrigin,
+    origin: 'https://arbre-decision-front.onrender.com',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true
 }));
 
