@@ -32,7 +32,7 @@ function App() {
           path="/"
           element={<PrivateRoute><DashboardLayout /></PrivateRoute>}
         >
-          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="dashboard" element={<DecisionTreeEditor />} />
           <Route path="users" element={<UserManagement />} />
           <Route path="settings" element={<Settings />} />
           <Route index element={<Navigate to="/dashboard" />} />
