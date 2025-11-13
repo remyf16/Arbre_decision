@@ -1,6 +1,11 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 
 const SideNav = () => {
+  const baseClasses = "flex items-center gap-3 px-3 py-2 rounded-lg";
+  const inactiveClasses = "text-text-muted-light dark:text-text-muted-dark hover:bg-black/5 dark:hover:bg-white/5";
+  const activeClasses = "bg-primary/20 text-primary";
+
   return (
     <aside className="flex flex-col w-64 bg-surface-light dark:bg-surface-dark border-r border-border-light dark:border-border-dark">
       <div className="flex flex-col h-full justify-between p-4">
@@ -15,18 +20,18 @@ const SideNav = () => {
             </div>
           </div>
           <nav className="flex flex-col gap-2">
-            <a className="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/20 text-primary" href="#">
+            <NavLink to="/dashboard" className={({ isActive }) => `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`}>
               <span className="material-symbols-outlined fill">dashboard</span>
               <p className="text-sm font-medium leading-normal">Tableau de bord</p>
-            </a>
-            <a className="flex items-center gap-3 px-3 py-2 text-text-muted-light dark:text-text-muted-dark hover:bg-black/5 dark:hover:bg-white/5 rounded-lg" href="#">
+            </NavLink>
+            <NavLink to="/users" className={({ isActive }) => `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`}>
               <span className="material-symbols-outlined">group</span>
               <p className="text-sm font-medium leading-normal">Utilisateurs</p>
-            </a>
-            <a className="flex items-center gap-3 px-3 py-2 text-text-muted-light dark:text-text-muted-dark hover:bg-black/5 dark:hover:bg-white/5 rounded-lg" href="#">
+            </NavLink>
+            <NavLink to="/settings" className={({ isActive }) => `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`}>
               <span className="material-symbols-outlined">settings</span>
               <p className="text-sm font-medium leading-normal">Paramètres</p>
-            </a>
+            </NavLink>
           </nav>
         </div>
       </div>
