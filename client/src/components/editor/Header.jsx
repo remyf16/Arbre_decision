@@ -1,11 +1,35 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 
-const Header = () => {
+const Header = ({ treeName, onNameChange }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState(treeName);
+
+  const handleBlur = () => {
+    setIsEditing(false);
+    onNameChange(name);
+  };
+
   return (
     <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-border-light dark:border-border-dark px-6 py-3 bg-surface-light dark:bg-surface-dark z-20">
       <div className="flex items-center gap-4">
-        <h2 className="text-text-light dark:text-text-dark text-lg font-bold">Decision Tree Editor</h2>
+        {isEditing ? (
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onBlur={handleBlur}
+            autoFocus
+            className="text-lg font-bold bg-transparent border-b"
+          />
+        ) : (
+          <h2
+            className="text-text-light dark:text-text-dark text-lg font-bold cursor-pointer"
+            onClick={() => setIsEditing(true)}
+          >
+            {name}
+          </h2>
+        )}
       </div>
       <div className="flex flex-1 justify-end gap-2">
         <button className="flex items-center justify-center gap-2 overflow-hidden rounded-md h-10 px-4 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark text-text-light dark:text-text-dark text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800">

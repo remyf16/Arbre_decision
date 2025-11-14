@@ -11,6 +11,7 @@ import useDebounce from '../hooks/useDebounce';
 
 const DecisionTreeEditor = () => {
   const { id } = useParams();
+  const [tree, setTree] = useState(null);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNode, setSelectedNode] = useState(null);
@@ -22,6 +23,7 @@ const DecisionTreeEditor = () => {
     const fetchTree = async () => {
       try {
         const res = await axios.get(`/api/decision-trees/${id}`);
+        setTree(res.data);
         setNodes(res.data.nodes || []);
         setEdges(res.data.edges || []);
       } catch (err) {
@@ -35,10 +37,15 @@ const DecisionTreeEditor = () => {
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
+  const handleNameChange = (newName) => {
+    setTree({ ...tree, name: newName });
+  };
+
   const onSave = useCallback(async () => {
-    if (nodes.length === 0 || !id) return;
+    if (!tree || !id) return;
     try {
       await axios.put(`/api/decision-trees/${id}`, {
+        name: tree.name,
         nodes: nodes,
         edges: edges,
       });
@@ -46,7 +53,7 @@ const DecisionTreeEditor = () => {
     } catch (err) {
       console.error('Failed to save tree:', err);
     }
-  }, [id, nodes, edges]);
+  }, [id, tree, nodes, edges]);
 
   useEffect(() => {
     if (debouncedNodes.length > 0) { // Avoid saving on initial load
@@ -54,10 +61,12 @@ const DecisionTreeEditor = () => {
     }
   }, [debouncedNodes, debouncedEdges, onSave]);
 
+  if (!tree) return <div>Loading...</div>;
+
   return (
     <div className="flex flex-col h-screen w-full font-display text-text-light dark:text-text-dark bg-background-light dark:bg-background-dark">
       <ReactFlowProvider>
-        <Header />
+        <Header treeName={tree.name} onNameChange={handleNameChange} />
         <div className="flex flex-1 overflow-hidden">
           <ToolsSidebar />
           <main className="flex-1 relative bg-background-light dark:bg-background-dark overflow-hidden">
