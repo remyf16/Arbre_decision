@@ -8,7 +8,6 @@ import DecisionTreeEditor from './components/DecisionTreeEditor';
 import DecisionTreeViewer from './components/DecisionTreeViewer';
 import UserManagement from './components/dashboard/UserManagement';
 import Settings from './components/dashboard/Settings';
-import EditorPage from './components/dashboard/EditorPage';
 import TreeResults from './components/dashboard/TreeResults';
 
 const PrivateRoute = ({ children }) => {
@@ -35,21 +34,12 @@ function App() {
           element={<PrivateRoute><DashboardLayout /></PrivateRoute>}
         >
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="editor" element={<EditorPage />} />
+          <Route path="editor/:id" element={<DecisionTreeEditor />} />
           <Route path="results/:treeId" element={<TreeResults />} />
           <Route path="users" element={<UserManagement />} />
           <Route path="settings" element={<Settings />} />
           <Route index element={<Navigate to="/dashboard" />} />
         </Route>
-
-        <Route
-          path="/editor/:id"
-          element={
-            <PrivateRoute>
-              <DecisionTreeEditor />
-            </PrivateRoute>
-          }
-        />
       </Routes>
     </Router>
   );
