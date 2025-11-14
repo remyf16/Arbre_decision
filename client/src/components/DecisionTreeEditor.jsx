@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { ReactFlowProvider, useNodesState, useEdgesState, addEdge } from 'reactflow';
-import axios from 'axios';
+import axios from '../api/axios';
 import Header from './editor/Header';
 import ToolsSidebar from './editor/ToolsSidebar';
 import EditorCanvas from './editor/EditorCanvas';
@@ -15,17 +15,21 @@ const DecisionTreeEditor = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNode, setSelectedNode] = useState(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const debouncedNodes = useDebounce(nodes, 1000);
   const debouncedEdges = useDebounce(edges, 1000);
+  const debouncedTreeName = useDebounce(tree?.name, 1000);
 
   useEffect(() => {
     const fetchTree = async () => {
       try {
-        const res = await axios.get(`/api/decision-trees/${id}`);
+        const res = await axios.get(`/decision-trees/${id}`);
         setTree(res.data);
         setNodes(res.data.nodes || []);
         setEdges(res.data.edges || []);
+        // Set initial load to false after a short delay to prevent initial save
+        setTimeout(() => setIsInitialLoad(false), 500);
       } catch (err) {
         console.error("Failed to fetch tree data:", err);
       }
@@ -44,7 +48,7 @@ const DecisionTreeEditor = () => {
   const onSave = useCallback(async () => {
     if (!tree || !id) return;
     try {
-      await axios.put(`/api/decision-trees/${id}`, {
+      await axios.put(`/decision-trees/${id}`, {
         name: tree.name,
         nodes: nodes,
         edges: edges,
@@ -56,10 +60,10 @@ const DecisionTreeEditor = () => {
   }, [id, tree, nodes, edges]);
 
   useEffect(() => {
-    if (debouncedNodes.length > 0) { // Avoid saving on initial load
+    if (!isInitialLoad) {
       onSave();
     }
-  }, [debouncedNodes, debouncedEdges, onSave]);
+  }, [debouncedNodes, debouncedEdges, debouncedTreeName, onSave, isInitialLoad]);
 
   if (!tree) return <div>Loading...</div>;
 

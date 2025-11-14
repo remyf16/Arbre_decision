@@ -16,9 +16,13 @@ const NodeEditorSidebar = ({ selectedNode, setNodes }) => {
     setNodes((nds) =>
       nds.map((node) => {
         if (node.id === selectedNode.id) {
-          node.data = {
-            ...node.data,
-            label: newLabel,
+          // Create a new node object with the updated data property
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              label: newLabel,
+            },
           };
         }
         return node;

@@ -1,9 +1,13 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Header = ({ treeName, onNameChange }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(treeName);
+
+  useEffect(() => {
+    setName(treeName);
+  }, [treeName]);
 
   const handleBlur = () => {
     setIsEditing(false);
