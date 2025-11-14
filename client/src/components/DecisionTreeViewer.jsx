@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../api/axios';
 
 const DecisionTreeViewer = () => {
   const { id } = useParams();
@@ -14,7 +14,7 @@ const DecisionTreeViewer = () => {
   useEffect(() => {
     const fetchTree = async () => {
       try {
-        const res = await axios.get(`/api/decision-trees/${id}`);
+        const res = await axios.get(`/decision-trees/${id}`);
         setTree(res.data);
         setCurrentNodeId(res.data.nodes[0].id); // Start with the first node
         setLoading(false);
@@ -57,7 +57,7 @@ const DecisionTreeViewer = () => {
     if (currentNode && currentNode.type === 'result') {
       const saveResult = async () => {
         try {
-          await axios.post('/api/results', {
+          await axios.post('/results/public', {
             decisionTree: id,
             path,
             resultNode: currentNode.id,

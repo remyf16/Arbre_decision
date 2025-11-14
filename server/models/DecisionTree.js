@@ -1,9 +1,28 @@
 const mongoose = require('mongoose');
 
 const decisionTreeSchema = new mongoose.Schema({
-  title: {
+  name: {
     type: String,
     required: true,
+  },
+  description: {
+    type: String,
+  },
+  nodes: {
+    type: mongoose.Schema.Types.Mixed,
+    default: [],
+  },
+  edges: {
+    type: mongoose.Schema.Types.Mixed,
+    default: [],
+  },
+  status: {
+    type: String,
+    default: 'Brouillon',
+  },
+  views: {
+    type: Number,
+    default: 0,
   },
   createdAt: {
     type: Date,
@@ -13,10 +32,6 @@ const decisionTreeSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  nodes: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Node',
-  }],
 });
 
 const DecisionTree = mongoose.model('DecisionTree', decisionTreeSchema);

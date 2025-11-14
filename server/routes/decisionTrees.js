@@ -2,12 +2,11 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const DecisionTree = require('../models/DecisionTree');
-const Node = require('../models/Node');
 
 // Get all decision trees
 router.get('/', auth, async (req, res) => {
   try {
-    const trees = await DecisionTree.find().populate('nodes');
+    const trees = await DecisionTree.find();
     res.json(trees);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -17,7 +16,7 @@ router.get('/', auth, async (req, res) => {
 // Get a single decision tree
 router.get('/:id', auth, async (req, res) => {
   try {
-    const tree = await DecisionTree.findById(req.params.id).populate('nodes');
+    const tree = await DecisionTree.findById(req.params.id);
     if (!tree) return res.status(404).json({ message: 'Decision tree not found' });
     res.json(tree);
   } catch (err) {
@@ -69,7 +68,7 @@ router.delete('/:id', auth, async (req, res) => {
     const tree = await DecisionTree.findById(req.params.id);
     if (!tree) return res.status(404).json({ message: 'Decision tree not found' });
 
-    await tree.remove();
+    await tree.deleteOne();
     res.json({ message: 'Deleted decision tree' });
   } catch (err) {
     res.status(500).json({ message: err.message });

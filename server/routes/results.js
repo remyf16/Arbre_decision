@@ -24,12 +24,32 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+// @route   POST api/results/public
+// @desc    Create a public result (anonymous)
+// @access  Public
+router.post('/public', async (req, res) => {
+  const { decisionTree, path, resultNode } = req.body;
+  try {
+    const newResult = new Result({
+      user: null,
+      decisionTree,
+      path,
+      resultNode,
+    });
+    const result = await newResult.save();
+    res.json(result);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 // @route   GET api/results/tree/:treeId
 // @desc    Get all results for a decision tree
 // @access  Private
 router.get('/tree/:treeId', auth, async (req, res) => {
   try {
-    const results = await Result.find({ decisionTree: req.params.treeId }).populate('user', ['name', 'email']);
+    const results = await Result.find({ decisionTree: req.params.treeId }).populate('user', 'email');
     res.json(results);
   } catch (err) {
     console.error(err.message);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../../api/axios';
 import CreateTreeModal from './CreateTreeModal';
 
 const Dashboard = () => {
@@ -11,7 +11,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchTrees = async () => {
       try {
-        const res = await axios.get('/api/decision-trees');
+        const res = await axios.get('/decision-trees');
         setTrees(res.data);
       } catch (err) {
         console.error('Failed to fetch decision trees:', err);
@@ -22,7 +22,7 @@ const Dashboard = () => {
 
   const handleCreateTree = async (name) => {
     try {
-      const res = await axios.post('/api/decision-trees', { name });
+      const res = await axios.post('/decision-trees', { name });
       navigate(`/editor/${res.data._id}`);
     } catch (err) {
       console.error('Failed to create new tree:', err);

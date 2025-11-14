@@ -1,12 +1,30 @@
-import React from 'react';
-
-const users = [
-    { id: 1, name: 'Jeanne Dupont', email: 'jeanne.dupont@example.com', role: 'Admin', status: 'Actif', dateAdded: '12/01/2023' },
-    { id: 2, name: 'Marc Lavoie', email: 'marc.lavoie@example.com', role: 'Éditeur', status: 'Actif', dateAdded: '10/11/2023' },
-    { id: 3, name: 'Sophie Martin', email: 'sophie.martin@example.com', role: 'Éditeur', status: 'Inactif', dateAdded: '05/09/2023' },
-];
+import React, { useState, useEffect } from 'react';
+import axios from '../../api/axios';
 
 const UserManagement = () => {
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [searchValue, setSearchValue] = useState('');
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await axios.get('/users');
+                setUsers(response.data);
+                setLoading(false);
+            } catch (err) {
+                setError('Failed to fetch users.');
+                setLoading(false);
+            }
+        };
+
+        fetchUsers();
+    }, []);
+
+    if (loading) return <main className="flex-1 p-6 lg:p-8"><p>Loading users...</p></main>;
+    if (error) return <main className="flex-1 p-6 lg:p-8"><p className="text-red-500">{error}</p></main>;
+
     return (
         <main className="flex-1 p-6 lg:p-8">
             <div className="mx-auto max-w-7xl">
@@ -32,7 +50,12 @@ const UserManagement = () => {
                                     <div className="text-gray-400 flex border border-r-0 border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 items-center justify-center pl-3 rounded-l-lg">
                                         <span className="material-symbols-outlined text-xl">search</span>
                                     </div>
-                                    <input className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg border border-l-0 border-gray-300 bg-white text-gray-900 focus:outline-0 focus:ring-2 focus:ring-primary/50 dark:border-gray-700 dark:bg-gray-900 dark:text-white h-full placeholder:text-gray-400 dark:placeholder:text-gray-500 pl-2 text-sm font-normal leading-normal" placeholder="Rechercher par nom ou email..." value="" />
+                                    <input
+                                        className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg border border-l-0 border-gray-300 bg-white text-gray-900 focus:outline-0 focus:ring-2 focus:ring-primary/50 dark:border-gray-700 dark:bg-gray-900 dark:text-white h-full placeholder:text-gray-400 dark:placeholder:text-gray-500 pl-2 text-sm font-normal leading-normal"
+                                        placeholder="Rechercher par nom ou email..."
+                                        value={searchValue}
+                                        onChange={(e) => setSearchValue(e.target.value)}
+                                    />
                                 </div>
                             </label>
                         </div>

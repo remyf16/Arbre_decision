@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const TopNav = () => {
+  const [searchValue, setSearchValue] = useState('');
+
   return (
     <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-border-light dark:border-border-dark px-10 py-4 bg-surface-light dark:bg-surface-dark">
       <div className="flex items-center gap-4 text-text-light dark:text-text-dark">
@@ -15,7 +17,8 @@ const TopNav = () => {
             <input
               className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light dark:text-text-dark focus:outline-0 focus:ring-0 border-none bg-transparent h-full placeholder:text-text-muted-light dark:placeholder:text-text-muted-dark pl-2 text-base font-normal leading-normal"
               placeholder="Rechercher un arbre..."
-              value=""
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
             />
           </div>
         </label>

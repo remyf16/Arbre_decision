@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../../api/axios';
 
 const TreeResults = () => {
   const { treeId } = useParams();
@@ -12,7 +12,7 @@ const TreeResults = () => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const res = await axios.get(`/api/results/tree/${treeId}`);
+        const res = await axios.get(`/results/tree/${treeId}`);
         setResults(res.data);
         setLoading(false);
       } catch (err) {
