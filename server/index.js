@@ -35,19 +35,6 @@ app.use(
 
 app.use(express.json());
 
-const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/decision_tree_app';
-
-mongoose.connect(mongoUri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => {
-  console.log('Connected to MongoDB');
-});
-
 const decisionTreesRouter = require('./routes/decisionTrees');
 app.use('/api/decision-trees', decisionTreesRouter);
 
@@ -60,6 +47,23 @@ app.use('/api/users', usersRouter);
 const resultsRouter = require('./routes/results');
 app.use('/api/results', resultsRouter);
 
-app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
-});
+const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/decision_tree_app';
+
+const startServer = async () => {
+  try {
+    await mongoose.connect(mongoUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log(`Connected to MongoDB at ${mongoUri}`);
+
+    app.listen(port, () => {
+      console.log(`Server listening at http://localhost:${port}`);
+    });
+  } catch (error) {
+    console.error('Failed to connect to MongoDB:', error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
