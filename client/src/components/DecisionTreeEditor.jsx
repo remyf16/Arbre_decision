@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ReactFlowProvider, useNodesState, useEdgesState, addEdge } from 'reactflow';
 import axios from '../api/axios';
 import Header from './editor/Header';
@@ -11,11 +11,13 @@ import useDebounce from '../hooks/useDebounce';
 
 const DecisionTreeEditor = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [tree, setTree] = useState(null);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedNode, setSelectedNode] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [isCreatingNew, setIsCreatingNew] = useState(false);
 
   const debouncedNodes = useDebounce(nodes, 1000);
   const debouncedEdges = useDebounce(edges, 1000);
@@ -34,10 +36,29 @@ const DecisionTreeEditor = () => {
         console.error("Failed to fetch tree data:", err);
       }
     };
+    const createNewTree = async () => {
+      try {
+        setIsCreatingNew(true);
+        const res = await axios.post('/decision-trees', { name: 'Nouvel arbre' });
+        setIsCreatingNew(false);
+        navigate(`/editor/${res.data._id}`, { replace: true });
+      } catch (err) {
+        console.error('Failed to create tree:', err);
+        setIsCreatingNew(false);
+      }
+    };
+
+    if (id === 'new') {
+      if (!isCreatingNew) {
+        createNewTree();
+      }
+      return;
+    }
+
     if (id) {
       fetchTree();
     }
-  }, [id, setNodes, setEdges]);
+  }, [id, setNodes, setEdges, isCreatingNew, navigate]);
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
@@ -65,6 +86,7 @@ const DecisionTreeEditor = () => {
     }
   }, [debouncedNodes, debouncedEdges, debouncedTreeName, onSave, isInitialLoad]);
 
+  if (isCreatingNew) return <div>Création du nouvel arbre...</div>;
   if (!tree) return <div>Loading...</div>;
 
   return (
