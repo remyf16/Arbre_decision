@@ -7,20 +7,36 @@ const UserManagement = () => {
     const [error, setError] = useState(null);
     const [searchValue, setSearchValue] = useState('');
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const response = await axios.get('/users');
-                setUsers(response.data);
-                setLoading(false);
-            } catch (err) {
-                setError('Failed to fetch users.');
-                setLoading(false);
-            }
-        };
+    const fetchUsers = async () => {
+        try {
+            const response = await axios.get('/users');
+            setUsers(response.data);
+            setLoading(false);
+        } catch (err) {
+            setError('Failed to fetch users.');
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchUsers();
     }, []);
+
+    const handleDelete = async (userId) => {
+        if (window.confirm('Are you sure you want to delete this user?')) {
+            try {
+                await axios.delete(`/users/${userId}`);
+                // Refresh the list of users after deletion
+                fetchUsers();
+            } catch (err) {
+                setError('Failed to delete user.');
+            }
+        }
+    };
+
+    const filteredUsers = users.filter(user =>
+        user.email.toLowerCase().includes(searchValue.toLowerCase())
+    );
 
     if (loading) return <main className="flex-1 p-6 lg:p-8"><p>Loading users...</p></main>;
     if (error) return <main className="flex-1 p-6 lg:p-8"><p className="text-red-500">{error}</p></main>;
@@ -52,23 +68,12 @@ const UserManagement = () => {
                                     </div>
                                     <input
                                         className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg border border-l-0 border-gray-300 bg-white text-gray-900 focus:outline-0 focus:ring-2 focus:ring-primary/50 dark:border-gray-700 dark:bg-gray-900 dark:text-white h-full placeholder:text-gray-400 dark:placeholder:text-gray-500 pl-2 text-sm font-normal leading-normal"
-                                        placeholder="Rechercher par nom ou email..."
+                                        placeholder="Rechercher par email..."
                                         value={searchValue}
                                         onChange={(e) => setSearchValue(e.target.value)}
                                     />
                                 </div>
                             </label>
-                        </div>
-                        {/* Chips/Filters */}
-                        <div className="flex items-center gap-3">
-                            <button className="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg border border-gray-300 bg-white px-3 dark:border-gray-700 dark:bg-gray-800">
-                                <p className="text-gray-700 dark:text-gray-300 text-sm font-medium leading-normal">Rôle: Tous</p>
-                                <span className="material-symbols-outlined text-gray-400 dark:text-gray-500 text-base">expand_more</span>
-                            </button>
-                            <button className="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg border border-gray-300 bg-white px-3 dark:border-gray-700 dark:bg-gray-800">
-                                <p className="text-gray-700 dark:text-gray-300 text-sm font-medium leading-normal">Statut: Tous</p>
-                                <span className="material-symbols-outlined text-gray-400 dark:text-gray-500 text-base">expand_more</span>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -81,36 +86,27 @@ const UserManagement = () => {
                                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
                                     <thead className="bg-gray-50 dark:bg-gray-900">
                                         <tr>
-                                            <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-white sm:pl-6" scope="col">Nom</th>
-                                            <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white" scope="col">Email</th>
+                                            <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-white sm:pl-6" scope="col">Email</th>
                                             <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white" scope="col">Rôle</th>
-                                            <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white" scope="col">Statut</th>
-                                            <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white" scope="col">Date d'ajout</th>
                                             <th className="relative py-3.5 pl-3 pr-4 sm:pr-6" scope="col">
                                                 <span className="sr-only">Actions</span>
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-800 dark:bg-gray-900/50">
-                                        {users.map((user) => (
-                                            <tr key={user.id}>
-                                                <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-white sm:pl-6">{user.name}</td>
-                                                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">{user.email}</td>
+                                        {filteredUsers.map((user) => (
+                                            <tr key={user._id}>
+                                                <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-white sm:pl-6">{user.email}</td>
                                                 <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">{user.role}</td>
-                                                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                                    <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${user.status === 'Actif' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-400'}`}>{user.status}</span>
-                                                </td>
-                                                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">{user.dateAdded}</td>
                                                 <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                                                     <div className="flex items-center justify-end gap-2">
-                                                        {/* User results would be displayed in a modal or a dedicated user details page */}
-                                                        <button className="p-1.5 rounded-md text-gray-500 hover:text-primary hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800">
-                                                            <span className="material-symbols-outlined text-lg">visibility</span>
-                                                        </button>
                                                         <button className="p-1.5 rounded-md text-gray-500 hover:text-primary hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800">
                                                             <span className="material-symbols-outlined text-lg">edit</span>
                                                         </button>
-                                                        <button className="p-1.5 rounded-md text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800">
+                                                        <button
+                                                            className="p-1.5 rounded-md text-gray-500 hover:text-red-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+                                                            onClick={() => handleDelete(user._id)}
+                                                        >
                                                             <span className="material-symbols-outlined text-lg">delete</span>
                                                         </button>
                                                     </div>

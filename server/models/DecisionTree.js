@@ -1,5 +1,36 @@
 const mongoose = require('mongoose');
 
+// Sub-schema for answers within a node's data
+const answerSchema = new mongoose.Schema({
+  id: { type: String, required: true },
+  text: { type: String, required: true },
+});
+
+// Sub-schema for the 'data' object within a node
+const nodeDataSchema = new mongoose.Schema({
+  label: { type: String, required: true },
+  answers: [answerSchema],
+});
+
+// Main schema for a React Flow node
+const nodeSchema = new mongoose.Schema({
+  id: { type: String, required: true },
+  type: { type: String },
+  data: { type: nodeDataSchema, required: true },
+  position: {
+    x: { type: Number, required: true },
+    y: { type: Number, required: true },
+  },
+});
+
+// Main schema for a React Flow edge
+const edgeSchema = new mongoose.Schema({
+  id: { type: String, required: true },
+  source: { type: String, required: true },
+  target: { type: String, required: true },
+  sourceHandle: { type: String },
+});
+
 const decisionTreeSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -9,11 +40,11 @@ const decisionTreeSchema = new mongoose.Schema({
     type: String,
   },
   nodes: {
-    type: mongoose.Schema.Types.Mixed,
+    type: [nodeSchema],
     default: [],
   },
   edges: {
-    type: mongoose.Schema.Types.Mixed,
+    type: [edgeSchema],
     default: [],
   },
   status: {

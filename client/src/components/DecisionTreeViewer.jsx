@@ -16,7 +16,12 @@ const DecisionTreeViewer = () => {
       try {
         const res = await axios.get(`/decision-trees/${id}`);
         setTree(res.data);
-        setCurrentNodeId(res.data.nodes[0].id); // Start with the first node
+        // Guard: Check if nodes exist and are not empty before setting the first node.
+        if (res.data && res.data.nodes && res.data.nodes.length > 0) {
+          setCurrentNodeId(res.data.nodes[0].id);
+        } else {
+          setError('This decision tree is empty or invalid.');
+        }
         setLoading(false);
       } catch (err) {
         setError('Failed to load decision tree.');
@@ -26,13 +31,22 @@ const DecisionTreeViewer = () => {
     fetchTree();
   }, [id]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
-  if (!tree) return <p>No tree found.</p>;
+  if (loading) return <p className="text-center text-lg">Loading...</p>;
+  if (error) return <p className="text-center text-lg text-red-500">{error}</p>;
+  if (!tree || !tree.nodes || tree.nodes.length === 0) {
+    return <p className="text-center text-lg">This decision tree is incomplete and cannot be displayed.</p>;
+  }
 
   const currentNode = tree.nodes.find(node => node.id === currentNodeId);
 
+  // Guard: If no current node is found (which shouldn't happen with the checks above), show an error.
+  if (!currentNode) {
+    return <p className="text-center text-lg text-red-500">Error: Could not find the current node.</p>;
+  }
+
   const handleAnswerClick = (answer, index) => {
+    // Guard: Ensure edges exist before trying to find the next step.
+    if (!tree.edges) return;
     const edge = tree.edges.find(edge => edge.source === currentNodeId && edge.sourceHandle === `answer-${index}`);
     if (edge) {
       setPath([...path, { nodeId: currentNodeId, answer: answer.text }]);
@@ -50,7 +64,10 @@ const DecisionTreeViewer = () => {
 
   const handleRestart = () => {
     setPath([]);
-    setCurrentNodeId(tree.nodes[0].id);
+    // Guard: Check if nodes exist and are not empty before restarting.
+    if (tree.nodes && tree.nodes.length > 0) {
+      setCurrentNodeId(tree.nodes[0].id);
+    }
   };
 
   useEffect(() => {
@@ -85,7 +102,7 @@ const DecisionTreeViewer = () => {
           </div>
           <div className="mt-8 flex justify-center">
             <div className="flex w-full max-w-sm flex-col items-stretch gap-3">
-              {currentNode.type === 'question' && currentNode.data.answers.map((answer, index) => (
+              {currentNode.type === 'question' && currentNode.data.answers && currentNode.data.answers.map((answer, index) => (
                 <button
                   key={index}
                   onClick={() => handleAnswerClick(answer, index)}

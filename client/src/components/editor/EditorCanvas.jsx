@@ -11,9 +11,6 @@ const nodeTypes = {
   result: ResultNode,
 };
 
-let id = 4;
-const getId = () => `${id++}`;
-
 const EditorCanvas = ({ nodes, edges, onNodesChange, onEdgesChange, onConnect, onNodeClick, setNodes }) => {
   const reactFlowWrapper = useRef(null);
   const { project } = useReactFlow();
@@ -39,7 +36,8 @@ const EditorCanvas = ({ nodes, edges, onNodesChange, onEdgesChange, onConnect, o
         y: event.clientY - reactFlowBounds.top,
       });
 
-      const newId = getId();
+      // Use a stable, unique ID generator instead of a local counter.
+      const newId = crypto.randomUUID();
       const newNode = {
         id: newId,
         type,
