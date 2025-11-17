@@ -4,15 +4,23 @@ const apiUrl = import.meta.env.VITE_APP_API_URL;
 
 const normalizedBaseUrl = (() => {
   if (apiUrl) {
-    return apiUrl.endsWith('/api') ? apiUrl : `${apiUrl.replace(/\/$/, '')}/api`;
+    const trimmedEnvUrl = apiUrl.replace(/\/$/, '');
+    return trimmedEnvUrl.endsWith('/api') ? trimmedEnvUrl : `${trimmedEnvUrl}/api`;
   }
 
-  // Fallback for the deployed frontend domain: route to the Render API host
-  if (typeof window !== 'undefined' && window.location.origin.includes('arbre-decision-front.onrender.com')) {
-    return 'https://arbre-decision.onrender.com/api';
+  if (typeof window !== 'undefined') {
+    const origin = window.location.origin.replace(/\/$/, '');
+
+    // Front-end déployé sur Render (domaine front) -> cibler automatiquement l'API Render
+    if (origin.includes('arbre-decision-front.onrender.com')) {
+      return 'https://arbre-decision.onrender.com/api';
+    }
+
+    // Fallback générique : même origine + /api
+    return `${origin}/api`;
   }
 
-  // Local/proxy development
+  // Local/proxy development (SSR/tests sans window)
   return '/api';
 })();
 
