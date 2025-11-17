@@ -27,6 +27,10 @@ const SideNav = ({ isSidebarOpen, toggleSidebar }) => {
               {/* Icon would go here */}
               {isSidebarOpen && <p className="text-sm font-medium leading-normal">Tableau de bord</p>}
             </NavLink>
+            <NavLink to="/editor/new" className={({ isActive }) => `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`}>
+                {/* Icon would go here */}
+                {isSidebarOpen && <p className="text-sm font-medium leading-normal">Créer un arbre</p>}
+            </NavLink>
             <NavLink to="/users" className={({ isActive }) => `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`}>
               {/* Icon would go here */}
               {isSidebarOpen && <p className="text-sm font-medium leading-normal">Utilisateurs</p>}

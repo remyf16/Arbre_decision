@@ -1,11 +1,69 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../../api/axios';
 
+const CreateUserModal = ({ isOpen, onClose, onCreate }) => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onCreate(email, password);
+        setEmail('');
+        setPassword('');
+        onClose();
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
+                <h2 className="text-xl font-bold mb-4">Créer un nouvel utilisateur</h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-4">
+                        <label className="block text-gray-700 dark:text-gray-300 mb-2" htmlFor="email">
+                            Email
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full px-3 py-2 border rounded-lg"
+                            required
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700 dark:text-gray-300 mb-2" htmlFor="password">
+                            Mot de passe
+                        </label>
+                        <input
+                            type="password"
+                            id="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full px-3 py-2 border rounded-lg"
+                            required
+                        />
+                    </div>
+                    <div className="flex justify-end gap-4">
+                        <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg">Annuler</button>
+                        <button type="submit" className="px-4 py-2 bg-primary text-white rounded-lg">Créer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchValue, setSearchValue] = useState('');
+    const [isModalOpen, setModalOpen] = useState(false);
+
 
     const fetchUsers = async () => {
         try {
@@ -26,11 +84,19 @@ const UserManagement = () => {
         if (window.confirm('Are you sure you want to delete this user?')) {
             try {
                 await axios.delete(`/users/${userId}`);
-                // Refresh the list of users after deletion
                 fetchUsers();
             } catch (err) {
                 setError('Failed to delete user.');
             }
+        }
+    };
+
+    const handleCreateUser = async (email, password) => {
+        try {
+            await axios.post('/auth/register', { email, password });
+            fetchUsers();
+        } catch (err) {
+            setError('Failed to create user.');
         }
     };
 
@@ -43,6 +109,11 @@ const UserManagement = () => {
 
     return (
         <main className="flex-1 p-6 lg:p-8">
+            <CreateUserModal
+                isOpen={isModalOpen}
+                onClose={() => setModalOpen(false)}
+                onCreate={handleCreateUser}
+            />
             <div className="mx-auto max-w-7xl">
                 {/* PageHeading */}
                 <div className="flex flex-wrap items-center justify-between gap-4">
@@ -50,7 +121,9 @@ const UserManagement = () => {
                         <p className="text-gray-900 dark:text-white text-3xl font-bold leading-tight tracking-tight">Gestion des Utilisateurs</p>
                         <p className="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">Ajoutez, modifiez et gérez les accès des utilisateurs à vos arbres de décision.</p>
                     </div>
-                    <button className="flex min-w-[84px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-colors">
+                    <button
+                        onClick={() => setModalOpen(true)}
+                        className="flex min-w-[84px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-colors">
                         <span className="material-symbols-outlined text-base">add</span>
                         <span className="truncate">Ajouter un utilisateur</span>
                     </button>
