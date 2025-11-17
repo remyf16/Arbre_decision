@@ -1,5 +1,5 @@
 
-import { chromium } from '@playwright/test';
+import { chromium, expect } from '@playwright/test';
 
 const authFile = 'playwright/.auth/user.json';
 
@@ -7,14 +7,17 @@ async function globalSetup() {
   const browser = await chromium.launch();
   const page = await browser.newPage();
 
-  // This is a placeholder for a real login flow.
-  // In a real app, you would navigate to the login page, fill in credentials, and submit.
-  // Since we don't have a working login form, we'll create a dummy token.
-  await page.goto('http://localhost:5173');
-  await page.evaluate(() => {
-    localStorage.setItem('token', 'dummy-auth-token');
-  });
+  // Navigate to the login page and perform a real login.
+  await page.goto('http://localhost:5173/login');
+  await page.getByLabel('Email').fill('admin@example.com');
+  await page.getByLabel('Password').fill('password');
+  await page.getByRole('button', { name: 'Login' }).click();
 
+  // Wait for the navigation to the dashboard to confirm login was successful.
+  await page.waitForURL('**/dashboard');
+  await expect(page.locator('h1')).toContainText('Dashboard');
+
+  // Save the authenticated state to a file.
   await page.context().storageState({ path: authFile });
   await browser.close();
 }
