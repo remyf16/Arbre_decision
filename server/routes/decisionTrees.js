@@ -14,7 +14,7 @@ router.get('/', auth, async (req, res) => {
 });
 
 // Get a single decision tree
-router.get('/:id', auth, async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const tree = await DecisionTree.findById(req.params.id);
     if (!tree) return res.status(404).json({ message: 'Decision tree not found' });
