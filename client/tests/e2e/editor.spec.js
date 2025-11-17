@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Decision Tree Editor', () => {
   test('should create a new tree, add a node, and auto-save', async ({ page }) => {
     // Mock the POST request to create a new tree
-    await page.route('/api/decision-trees', route => {
+    await page.route('**/api/decision-trees', route => {
       route.fulfill({
         status: 201,
         body: JSON.stringify({
@@ -17,21 +17,25 @@ test.describe('Decision Tree Editor', () => {
     });
 
     // Mock the initial GET request for the new tree
-    await page.route('/api/decision-trees/new-tree-id', route => {
-      route.fulfill({
-        status: 200,
-        body: JSON.stringify({
-          _id: 'new-tree-id',
-          name: 'Nouvel Arbre de Décision',
-          nodes: [],
-          edges: [],
-        }),
-      });
+    await page.route('**/api/decision-trees/new-tree-id', route => {
+      if (route.request().method() === 'GET') {
+        route.fulfill({
+          status: 200,
+          body: JSON.stringify({
+            _id: 'new-tree-id',
+            name: 'Nouvel Arbre de Décision',
+            nodes: [],
+            edges: [],
+          }),
+        });
+      } else {
+        route.continue();
+      }
     });
 
     // Listen for the PUT request to save the tree
     let saveRequest = null;
-    await page.route('/api/decision-trees/new-tree-id', route => {
+    await page.route('**/api/decision-trees/new-tree-id', route => {
       if (route.request().method() === 'PUT') {
         saveRequest = route.request().postDataJSON();
       }
@@ -45,7 +49,7 @@ test.describe('Decision Tree Editor', () => {
 
     // 2. Verify navigation to the editor
     await page.waitForURL('**/editor/new-tree-id');
-    await expect(page.locator('h2')).toContainText('Decision Tree Editor');
+    await expect(page.locator('h2')).toContainText('Nouvel Arbre de Décision');
 
     // 3. Add a new node by dragging from the sidebar
     await page.getByText('Add Question').dragTo(page.locator('.react-flow__pane'));

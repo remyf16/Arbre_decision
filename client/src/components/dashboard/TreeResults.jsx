@@ -42,7 +42,7 @@ const TreeResults = () => {
             <tbody>
               {results.map((result) => (
                 <tr key={result._id} className="border-b border-border-light dark:border-border-dark">
-                  <td className="px-4 py-4">{result.user.name} ({result.user.email})</td>
+                  <td className="px-4 py-4">{result.user.email}</td>
                   <td className="px-4 py-4">{result.resultNode}</td>
                   <td className="px-4 py-4">{new Date(result.createdAt).toLocaleString()}</td>
                 </tr>
