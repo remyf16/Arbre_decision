@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../../api/axios';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -9,21 +10,8 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const apiUrl = import.meta.env.VITE_APP_API_URL;
-      const response = await fetch(`${apiUrl}/api/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        navigate('/login');
-      } else {
-        // Handle registration error
-        console.error('Registration failed');
-      }
+      await api.post('/auth/register', { email, password });
+      navigate('/login');
     } catch (error) {
       console.error('An error occurred during registration:', error);
     }
