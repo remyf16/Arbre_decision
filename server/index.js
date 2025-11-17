@@ -12,28 +12,28 @@ if (!process.env.JWT_SECRET) {
 
 const allowedOrigins = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(',')
-  : ['http://localhost:5173', 'http://localhost:3000'];
+  : [
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'https://arbre-decision-front.onrender.com',
+      'https://arbre-decision.onrender.com',
+    ];
 
-app.use(cors({
-    origin: allowedOrigins,
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests without an origin (mobile apps, curl) and whitelist known domains
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error('Not allowed by CORS'));
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true
-}));
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
-
-const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/decision_tree_app';
-
-mongoose.connect(mongoUri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => {
-  console.log('Connected to MongoDB');
-});
 
 const decisionTreesRouter = require('./routes/decisionTrees');
 app.use('/api/decision-trees', decisionTreesRouter);
@@ -47,6 +47,23 @@ app.use('/api/users', usersRouter);
 const resultsRouter = require('./routes/results');
 app.use('/api/results', resultsRouter);
 
-app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
-});
+const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/decision_tree_app';
+
+const startServer = async () => {
+  try {
+    await mongoose.connect(mongoUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log(`Connected to MongoDB at ${mongoUri}`);
+
+    app.listen(port, () => {
+      console.log(`Server listening at http://localhost:${port}`);
+    });
+  } catch (error) {
+    console.error('Failed to connect to MongoDB:', error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
